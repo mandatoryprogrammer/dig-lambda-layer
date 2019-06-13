@@ -56,3 +56,30 @@ b.gtld-servers.net.	172800	IN	AAAA	2001:503:231d::2:30
 END RequestId: b7abb31c-10a2-11e9-859c-b9daa8e62050
 REPORT RequestId: b7abb31c-10a2-11e9-859c-b9daa8e62050	Duration: 1206.05 ms	Billed Duration: 1300 ms 	Memory Size: 128 MB	Max Memory Used: 35 MB	
 ```
+
+---
+
+## Building a new version
+
+Please see the (AWS guide to create a deployment package](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-linux-binary-package/). The following steps are tailored to `dig`.
+
+1. Launch an Amazon EC2 instance from the Amazon Linux AMI
+1. Connect to the instance, and then install tools to extract the packages:
+    - `sudo yum install -y yum-utils rpmdevtools`
+1. Download and extract the libraries and the dependencies:
+    - `cd /tmp`
+    - `yumdownloader bind-utils.x86_64`
+    - `rpmdev-extract *rpm`
+1. Copy the libraries into a directory for the Lambda deployment package:
+    - `sudo mkdir -p /var/task`
+    - `sudo chown ec2-user:ec2-user /var/task`
+    - `cd /var/task`
+    - `/bin/cp /tmp/bind-utils-9.8.2-0.68.rc1.59.amzn1.x86_64/usr/* /var/task -R` _(note: replace `bind-utils-9.8.2-0.68.rc1.59.amzn1.x86_64` with the respective directory name)_
+1. Copy all dependencies into the Lambda deployment package:
+    - `mkdir /var/task/lib`
+    - Get a list of all dependencies - `ldd /usr/bin/dig`
+    - Copy each of the listed dependencies into your deployment package lib folder: eg. `sudo /bin/cp /usr/lib64/liblwres.so.80 /var/task/lib/liblwres.so.80`
+1. Create a deployment package ZIP:
+    - `cd /var/task`
+    - `zip -r9 /tmp/dig-layer.zip *`
+1. Download a copy of `dig-layer.zip` (eg. via SFTP) and upload as a new layer in your Lambda console
