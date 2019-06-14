@@ -63,7 +63,7 @@ REPORT RequestId: b7abb31c-10a2-11e9-859c-b9daa8e62050	Duration: 1206.05 ms	Bill
 
 Please see the (AWS guide to create a deployment package](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-linux-binary-package/). The following steps are tailored to `dig`.
 
-1. Launch an Amazon EC2 instance from the Amazon Linux AMI
+1. Launch an Amazon EC2 instance from [the latest Amazon Linux AMI](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
 1. Connect to the instance, and then install tools to extract the packages:
     - `sudo yum install -y yum-utils rpmdevtools`
 1. Download and extract the libraries and the dependencies:
